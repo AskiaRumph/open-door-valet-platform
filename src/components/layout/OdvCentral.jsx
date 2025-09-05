@@ -3,9 +3,10 @@ import { Link, useParams, useNavigate, useLocation } from 'react-router-dom';
 import { IconMenu, IconX, IconChevronRight, IconChevronLeft, IconSearch, IconBell, IconSettings, IconUser, IconHome, IconClock, IconStar, IconTrendingUp, IconAlertCircle, IconCircleCheck, IconInfoCircle } from '@tabler/icons-react';
 import GarageHeaderProfessional from '../GarageHeaderProfessional';
 import LotsSidebar from '../LotsSidebar';
+import LotSidebarEnhanced from '../LotSidebarEnhanced';
 import { GARAGES } from '../../constants/garages';
-import { useAuth } from '../../hooks/useAuth';
-import VehicleStager from '../../helpers/vehicle-stager';
+import { useAuth } from '../../hooks/useAuth.jsx';
+import VehicleStager from '../../helpers/vehicle-stager.jsx';
 
 // Enhanced navigation with breadcrumbs
 const Breadcrumbs = ({ garage, lot }) => {
@@ -296,7 +297,7 @@ export default function OdvCentral({ children, onShowAuth }) {
 
             {/* Enhanced LotSidebar */}
             {currentGarage && (
-              <LotsSidebar
+              <LotSidebarEnhanced
                 garage={currentGarage}
                 currentLotId={currentLot}
                 collapsed={sidebarCollapsed}
@@ -334,7 +335,7 @@ export default function OdvCentral({ children, onShowAuth }) {
 
             {/* Enhanced LotSidebar */}
             {currentGarage && (
-              <LotsSidebar
+              <LotSidebarEnhanced
                 garage={currentGarage}
                 currentLotId={currentLot}
                 collapsed={false}

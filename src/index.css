@@ -2,6 +2,44 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Custom scrollbar styles for enhanced sidebar */
+.custom-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(174,163,109,0.3) transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+  width: 6px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(174,163,109,0.3);
+  border-radius: 3px;
+  transition: background 0.2s;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(174,163,109,0.5);
+}
+
+/* Vegas Gold gradient text */
+.text-gradient-gold {
+  background: linear-gradient(135deg, #FFD700 0%, #FFA500 50%, #FFD700 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Lot item active state */
+.lot-item-active {
+  background: linear-gradient(135deg, rgba(255, 215, 0, 0.1) 0%, rgba(255, 165, 0, 0.05) 100%);
+  border: 1px solid rgba(255, 215, 0, 0.3);
+}
+
 /* Custom CSS variables for Valet Platform */
 :root {
   --vegas-gold: #FFD700;

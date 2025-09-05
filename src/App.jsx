@@ -1,6 +1,6 @@
 import React from 'react'
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
-import { AuthProvider } from './hooks/useAuth'
+import { AuthProvider } from './hooks/useAuth.jsx'
 import { FirestoreProvider } from './contexts/FirestoreContext'
 import OdvCentral from './components/layout/OdvCentral'
 import ParkingLot from './components/ParkingLot'
