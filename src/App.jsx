@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
 import { AuthProvider } from './hooks/useAuth'
 import { FirestoreProvider } from './contexts/FirestoreContext'
 import OdvCentral from './components/layout/OdvCentral'
+import ParkingLot from './components/ParkingLot'
 import AIDevPromptBarDemo from './components/ai/AIDevPromptBarDemo'
 import EnhancedValet from './components/EnhancedValet'
 import { preloadCriticalBricks } from './components/EnhancedValet'
@@ -81,11 +82,11 @@ function App() {
               {/* AI Dev Prompt Bar Demo */}
               <Route path="/ai-dev-prompt-bar" element={<AIDevPromptBarDemo />} />
               
-              {/* Garage routes */}
-              <Route path="/:garageId" element={<OdvCentral />} />
+              {/* Garage routes with ParkingLot */}
+              <Route path="/:garageId" element={<OdvCentral><ParkingLot /></OdvCentral>} />
               
-              {/* Lot routes */}
-              <Route path="/:garageId/:lotId" element={<OdvCentral />} />
+              {/* Lot routes with ParkingLot */}
+              <Route path="/:garageId/:lotId" element={<OdvCentral><ParkingLot /></OdvCentral>} />
             </Routes>
           </div>
         </Router>

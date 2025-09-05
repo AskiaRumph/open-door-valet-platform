@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Valet Platform - AI Dev Prompt Bar</title>
+    <style>
+      /* Vegas Gold theme variables */
+      :root {
+        --vegas-gold: #FFD700;
+        --vegas-gold-dark: #B8860B;
+        --ai-blue: #00D4FF;
+        --success-green: #10B981;
+        --error-red: #EF4444;
+        --warning-yellow: #F59E0B;
+      }
+      
+      /* Custom Vegas Gold utility classes */
+      .vegas-gold { color: var(--vegas-gold); }
+      .bg-vegas-gold { background-color: var(--vegas-gold); }
+      .border-vegas-gold { border-color: var(--vegas-gold); }
+      .text-vegas-gold { color: var(--vegas-gold); }
+      
+      /* Loading animation */
+      .loading-spinner {
+        border: 4px solid #f3f3f3;
+        border-top: 4px solid var(--vegas-gold);
+        border-radius: 50%;
+        width: 40px;
+        height: 40px;
+        animation: spin 1s linear infinite;
+        margin: 20px auto;
+      }
+      
+      @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+      }
+      
+      body {
+        margin: 0;
+        padding: 0;
+        background: #000;
+        color: #fff;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="root">
+      <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; background: linear-gradient(135deg, #000 0%, #1a1a1a 100%);">
+        <div class="loading-spinner"></div>
+        <h2 style="color: var(--vegas-gold); margin-top: 20px;">Loading Valet Platform...</h2>
+        <p style="color: #666; margin-top: 10px;">AI Dev Prompt Bar Demo</p>
+      </div>
+    </div>
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
+</html>

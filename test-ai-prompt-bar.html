@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Dev Prompt Bar - Test</title>
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://unpkg.com/@tabler/icons@latest/dist/index.umd.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+            background: #000;
+            color: #fff;
+            line-height: 1.6;
+        }
+        
+        .vegas-gold { color: #FFD700; }
+        .bg-vegas-gold { background-color: #FFD700; }
+        .text-vegas-gold { color: #FFD700; }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #1a1a1a 0%, #000 100%);
+            padding: 40px 0;
+            text-align: center;
+            border-bottom: 2px solid #FFD700;
+        }
+        
+        .header h1 {
+            font-size: 3rem;
+            margin-bottom: 10px;
+            color: #FFD700;
+        }
+        
+        .header p {
+            font-size: 1.2rem;
+            color: #ccc;
+        }
+        
+        .demo-section {
+            margin: 40px 0;
+            padding: 30px;
+            background: #1a1a1a;
+            border-radius: 10px;
+            border: 1px solid #333;
+        }
+        
+        .demo-section h2 {
+            color: #FFD700;
+            margin-bottom: 20px;
+            font-size: 1.8rem;
+        }
+        
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+        
+        .feature-card {
+            background: #2a2a2a;
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px solid #444;
+            transition: all 0.3s ease;
+        }
+        
+        .feature-card:hover {
+            border-color: #FFD700;
+            transform: translateY(-2px);
+        }
+        
+        .feature-card h3 {
+            color: #FFD700;
+            margin-bottom: 10px;
+        }
+        
+        .feature-card p {
+            color: #ccc;
+            font-size: 0.9rem;
+        }
+        
+        .button {
+            background: #FFD700;
+            color: #000;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 6px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin: 10px 5px;
+        }
+        
+        .button:hover {
+            background: #B8860B;
+            transform: translateY(-1px);
+        }
+        
+        .button.secondary {
+            background: #333;
+            color: #fff;
+        }
+        
+        .button.secondary:hover {
+            background: #555;
+        }
+        
+        .mock-data {
+            background: #1a1a1a;
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px solid #333;
+            margin: 20px 0;
+        }
+        
+        .mock-item {
+            background: #2a2a2a;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 6px;
+            border-left: 4px solid #FFD700;
+        }
+        
+        .mock-item h4 {
+            color: #FFD700;
+            margin-bottom: 5px;
+        }
+        
+        .mock-item p {
+            color: #ccc;
+            font-size: 0.9rem;
+        }
+        
+        .status {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+        
+        .status.success {
+            background: #10B981;
+            color: #000;
+        }
+        
+        .status.warning {
+            background: #F59E0B;
+            color: #000;
+        }
+        
+        .status.info {
+            background: #3B82F6;
+            color: #fff;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🤖 AI Dev Prompt Bar</h1>
+        <p>Professional AI Development Prompt Management System</p>
+    </div>
+    
+    <div class="container">
+        <div class="demo-section">
+            <h2>🚀 Features</h2>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h3>📝 Prompt Management</h3>
+                    <p>Create, edit, and organize AI development prompts with ease. Categorize by technology stack and complexity.</p>
+                </div>
+                <div class="feature-card">
+                    <h3>🔍 Smart Search</h3>
+                    <p>Find prompts quickly with intelligent search and filtering capabilities. Search by tags, categories, or content.</p>
+                </div>
+                <div class="feature-card">
+                    <h3>📊 Analytics</h3>
+                    <p>Track usage patterns and effectiveness of your prompts. Get insights into your development workflow.</p>
+                </div>
+                <div class="feature-card">
+                    <h3>🔄 Version Control</h3>
+                    <p>Keep track of prompt versions and changes. Collaborate with your team on prompt improvements.</p>
+                </div>
+                <div class="feature-card">
+                    <h3>🎨 Custom Themes</h3>
+                    <p>Personalize your interface with Vegas Gold theme and custom color schemes for better productivity.</p>
+                </div>
+                <div class="feature-card">
+                    <h3>☁️ Cloud Sync</h3>
+                    <p>Access your prompts from anywhere with Supabase cloud integration and real-time synchronization.</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="demo-section">
+            <h2>🎯 Action Buttons</h2>
+            <div style="text-align: center; margin: 20px 0;">
+                <button class="button" onclick="showAlert('Create New Prompt')">
+                    ➕ Create New
+                </button>
+                <button class="button secondary" onclick="showAlert('Search Prompts')">
+                    🔍 Search
+                </button>
+                <button class="button secondary" onclick="showAlert('Filter Prompts')">
+                    🔧 Filter
+                </button>
+                <button class="button secondary" onclick="showAlert('Export Data')">
+                    📥 Export
+                </button>
+                <button class="button secondary" onclick="showAlert('Import Data')">
+                    📤 Import
+                </button>
+                <button class="button secondary" onclick="showAlert('Refresh Data')">
+                    🔄 Refresh
+                </button>
+            </div>
+        </div>
+        
+        <div class="demo-section">
+            <h2>📋 Mock Data Preview</h2>
+            <div class="mock-data">
+                <div class="mock-item">
+                    <h4>React Component Generator</h4>
+                    <p>Generate React components with TypeScript and Tailwind CSS</p>
+                    <span class="status success">Frontend</span>
+                    <span class="status info">react, typescript, tailwind</span>
+                </div>
+                <div class="mock-item">
+                    <h4>API Endpoint Creator</h4>
+                    <p>Generate REST API endpoints with proper error handling</p>
+                    <span class="status warning">Backend</span>
+                    <span class="status info">api, rest, nodejs</span>
+                </div>
+                <div class="mock-item">
+                    <h4>Database Schema Designer</h4>
+                    <p>Design database schemas with relationships and constraints</p>
+                    <span class="status success">Database</span>
+                    <span class="status info">database, schema, sql</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="demo-section">
+            <h2>⚡ Quick Stats</h2>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h3>Total Prompts</h3>
+                    <p style="font-size: 2rem; color: #FFD700;">3</p>
+                </div>
+                <div class="feature-card">
+                    <h3>Active Prompts</h3>
+                    <p style="font-size: 2rem; color: #10B981;">3</p>
+                </div>
+                <div class="feature-card">
+                    <h3>Categories</h3>
+                    <p style="font-size: 2rem; color: #3B82F6;">3</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="demo-section">
+            <h2>🔧 Technical Details</h2>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h3>Frontend</h3>
+                    <p>React 18, Vite, Tailwind CSS, Tabler Icons</p>
+                </div>
+                <div class="feature-card">
+                    <h3>Backend</h3>
+                    <p>Supabase, PostgreSQL, Real-time subscriptions</p>
+                </div>
+                <div class="feature-card">
+                    <h3>Features</h3>
+                    <p>CRUD operations, Search, Filter, Export/Import</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        function showAlert(action) {
+            alert(`${action} functionality would be implemented here!`);
+        }
+        
+        // Simulate loading
+        console.log('🤖 AI Dev Prompt Bar Demo Loaded!');
+        console.log('📊 Features: Prompt Management, Search, Analytics, Version Control');
+        console.log('🎨 Theme: Vegas Gold Professional');
+        console.log('☁️ Backend: Supabase Integration Ready');
+    </script>
+</body>
+</html>

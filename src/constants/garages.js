@@ -13,11 +13,46 @@ export const GARAGES = [
     icon: '🏢',
     color: 'vegas-gold',
     lots: [
-      { id: 'dashboard', name: 'Dashboard', icon: '📊', description: 'Main operations dashboard' },
-      { id: 'assignments', name: 'Assignments', icon: '📋', description: 'Valet assignment management' },
-      { id: 'valets', name: 'Valets', icon: '👥', description: 'Valet team management' },
-      { id: 'locations', name: 'Locations', icon: '📍', description: 'Service location management' },
-      { id: 'schedule', name: 'Schedule', icon: '📅', description: 'Scheduling and calendar' }
+      { 
+        id: 'dashboard', 
+        name: 'Dashboard', 
+        icon: '📊', 
+        description: 'Main operations dashboard',
+        brickId: 'dashboard-core',
+        componentName: 'DashboardLayout'
+      },
+      { 
+        id: 'assignments', 
+        name: 'Assignments', 
+        icon: '📋', 
+        description: 'Valet assignment management',
+        brickId: 'assignment-system',
+        componentName: 'AssignmentTable'
+      },
+      { 
+        id: 'valets', 
+        name: 'Valets', 
+        icon: '👥', 
+        description: 'Valet team management',
+        brickId: 'team-management',
+        componentName: 'ValetTable'
+      },
+      { 
+        id: 'locations', 
+        name: 'Locations', 
+        icon: '📍', 
+        description: 'Service location management',
+        brickId: 'location-management',
+        componentName: 'LocationManager'
+      },
+      { 
+        id: 'schedule', 
+        name: 'Schedule', 
+        icon: '📅', 
+        description: 'Scheduling and calendar',
+        brickId: 'schedule-system',
+        componentName: 'ScheduleCalendar'
+      }
     ]
   },
   {
@@ -27,10 +62,38 @@ export const GARAGES = [
     icon: '👤',
     color: 'ai-blue',
     lots: [
-      { id: 'clients', name: 'Clients', icon: '👥', description: 'Client management' },
-      { id: 'bookings', name: 'Bookings', icon: '📝', description: 'Service bookings' },
-      { id: 'invoices', name: 'Invoices', icon: '💰', description: 'Billing and invoicing' },
-      { id: 'support', name: 'Support', icon: '🎧', description: 'Customer support' }
+      { 
+        id: 'clients', 
+        name: 'Clients', 
+        icon: '👥', 
+        description: 'Client management',
+        brickId: 'client-management',
+        componentName: 'ClientTable'
+      },
+      { 
+        id: 'bookings', 
+        name: 'Bookings', 
+        icon: '📝', 
+        description: 'Service bookings',
+        brickId: 'booking-system',
+        componentName: 'BookingForm'
+      },
+      { 
+        id: 'invoices', 
+        name: 'Invoices', 
+        icon: '💰', 
+        description: 'Billing and invoicing',
+        brickId: 'invoice-system',
+        componentName: 'InvoiceGenerator'
+      },
+      { 
+        id: 'support', 
+        name: 'Support', 
+        icon: '🎧', 
+        description: 'Customer support',
+        brickId: 'support-system',
+        componentName: 'SupportChat'
+      }
     ]
   },
   {
@@ -40,10 +103,38 @@ export const GARAGES = [
     icon: '📈',
     color: 'success-green',
     lots: [
-      { id: 'reports', name: 'Reports', icon: '📊', description: 'Analytics and reports' },
-      { id: 'ai-insights', name: 'AI Insights', icon: '🤖', description: 'AI-powered analytics' },
-      { id: 'performance', name: 'Performance', icon: '⚡', description: 'Performance metrics' },
-      { id: 'trends', name: 'Trends', icon: '📈', description: 'Trend analysis' }
+      { 
+        id: 'reports', 
+        name: 'Reports', 
+        icon: '📊', 
+        description: 'Analytics and reports',
+        brickId: 'analytics-core',
+        componentName: 'ReportsDashboard'
+      },
+      { 
+        id: 'ai-insights', 
+        name: 'AI Insights', 
+        icon: '🤖', 
+        description: 'AI-powered analytics',
+        brickId: 'ai-insights',
+        componentName: 'AIChat'
+      },
+      { 
+        id: 'performance', 
+        name: 'Performance', 
+        icon: '⚡', 
+        description: 'Performance metrics',
+        brickId: 'performance-metrics',
+        componentName: 'PerformanceDashboard'
+      },
+      { 
+        id: 'trends', 
+        name: 'Trends', 
+        icon: '📈', 
+        description: 'Trend analysis',
+        brickId: 'trend-analysis',
+        componentName: 'TrendAnalysis'
+      }
     ]
   },
   {
@@ -53,10 +144,38 @@ export const GARAGES = [
     icon: '💳',
     color: 'vegas-gold',
     lots: [
-      { id: 'finance', name: 'Finance', icon: '💰', description: 'Financial overview' },
-      { id: 'payments', name: 'Payments', icon: '💳', description: 'Payment processing' },
-      { id: 'expenses', name: 'Expenses', icon: '📉', description: 'Expense tracking' },
-      { id: 'revenue', name: 'Revenue', icon: '📈', description: 'Revenue analysis' }
+      { 
+        id: 'finance', 
+        name: 'Finance', 
+        icon: '💰', 
+        description: 'Financial overview',
+        brickId: 'finance-core',
+        componentName: 'FinanceOverview'
+      },
+      { 
+        id: 'payments', 
+        name: 'Payments', 
+        icon: '💳', 
+        description: 'Payment processing',
+        brickId: 'payment-system',
+        componentName: 'PaymentProcessor'
+      },
+      { 
+        id: 'expenses', 
+        name: 'Expenses', 
+        icon: '📉', 
+        description: 'Expense tracking',
+        brickId: 'expense-tracker',
+        componentName: 'ExpenseTracker'
+      },
+      { 
+        id: 'revenue', 
+        name: 'Revenue', 
+        icon: '📈', 
+        description: 'Revenue analysis',
+        brickId: 'revenue-analysis',
+        componentName: 'RevenueAnalysis'
+      }
     ]
   },
   {
@@ -66,10 +185,38 @@ export const GARAGES = [
     icon: '⚙️',
     color: 'gray',
     lots: [
-      { id: 'settings', name: 'Settings', icon: '⚙️', description: 'System settings' },
-      { id: 'users', name: 'Users', icon: '👤', description: 'User management' },
-      { id: 'integrations', name: 'Integrations', icon: '🔗', description: 'Third-party integrations' },
-      { id: 'security', name: 'Security', icon: '🔒', description: 'Security settings' }
+      { 
+        id: 'settings', 
+        name: 'Settings', 
+        icon: '⚙️', 
+        description: 'System settings',
+        brickId: 'settings-core',
+        componentName: 'SettingsPanel'
+      },
+      { 
+        id: 'users', 
+        name: 'Users', 
+        icon: '👤', 
+        description: 'User management',
+        brickId: 'user-management',
+        componentName: 'UserManagement'
+      },
+      { 
+        id: 'integrations', 
+        name: 'Integrations', 
+        icon: '🔗', 
+        description: 'Third-party integrations',
+        brickId: 'integration-system',
+        componentName: 'IntegrationSettings'
+      },
+      { 
+        id: 'security', 
+        name: 'Security', 
+        icon: '🔒', 
+        description: 'Security settings',
+        brickId: 'security-system',
+        componentName: 'SecuritySettings'
+      }
     ]
   }
 ];

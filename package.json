@@ -1,46 +1,24 @@
 {
-  "name": "open-door-valet-platform",
+  "name": "valet-platform-ai-prompt-bar",
   "version": "1.0.0",
-  "description": "Ultimate enterprise-grade valet management platform with AI integration",
-  "main": "valet_dashboard_ultimate.html",
+  "description": "AI Dev Prompt Bar for Valet Platform",
+  "type": "module",
   "scripts": {
-    "start": "npx serve .",
-    "dev": "npx live-server --port=3000 --open=valet_dashboard_ultimate.html",
-    "build": "echo 'Static site - no build process needed'",
-    "deploy": "echo 'Deploy to your preferred hosting service'",
-    "test": "echo 'No tests specified'"
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "serve": "vite preview --port 3000"
   },
-  "keywords": [
-    "valet",
-    "management",
-    "dashboard",
-    "ai",
-    "pwa",
-    "enterprise",
-    "scheduling",
-    "gps-tracking"
-  ],
-  "author": "Your Name <your.email@example.com>",
-  "license": "MIT",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/yourusername/open-door-valet.git"
+  "dependencies": {
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-router-dom": "^6.8.0",
+    "react-error-boundary": "^4.0.11",
+    "@tabler/icons-react": "^2.0.0",
+    "@supabase/supabase-js": "^2.38.0"
   },
-  "bugs": {
-    "url": "https://github.com/yourusername/open-door-valet/issues"
-  },
-  "homepage": "https://github.com/yourusername/open-door-valet#readme",
   "devDependencies": {
-    "serve": "^14.2.1",
-    "live-server": "^1.2.2"
-  },
-  "engines": {
-    "node": ">=14.0.0",
-    "npm": ">=6.0.0"
-  },
-  "browserslist": [
-    "> 1%",
-    "last 2 versions",
-    "not dead"
-  ]
+    "@vitejs/plugin-react": "^4.0.3",
+    "vite": "^4.4.5"
+  }
 }
