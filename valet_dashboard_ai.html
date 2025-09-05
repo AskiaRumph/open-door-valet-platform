@@ -1,0 +1,1741 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Open Door Valet - AI-Powered Enterprise Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'vegas-gold': '#FFD700',
+                        'vegas-gold-bright': '#FFA500',
+                        'vegas-gold-light': '#FFF8DC',
+                        'dark-bg': '#0a0a0a',
+                        'card-bg': '#1a1a1a',
+                        'border-gold': '#FFD700',
+                        'ai-blue': '#00D4FF',
+                        'ai-purple': '#8B5CF6',
+                    }
+                }
+            }
+        }
+    </script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css">
+    <style>
+        .glass-effect {
+            background: rgba(26, 26, 26, 0.8);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 215, 0, 0.2);
+        }
+        .gradient-bg {
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 50%, #2a2a2a 100%);
+        }
+        .ai-gradient {
+            background: linear-gradient(135deg, #00D4FF 0%, #8B5CF6 100%);
+        }
+        .hover-glow:hover {
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.3);
+            transform: translateY(-2px);
+        }
+        .ai-glow:hover {
+            box-shadow: 0 0 20px rgba(0, 212, 255, 0.3);
+        }
+        .fade-in {
+            animation: fadeIn 0.6s ease-in-out;
+        }
+        .slide-in {
+            animation: slideIn 0.8s ease-out;
+        }
+        .pulse-glow {
+            animation: pulseGlow 2s infinite;
+        }
+        .floating {
+            animation: floating 3s ease-in-out infinite;
+        }
+        .ai-pulse {
+            animation: aiPulse 2s infinite;
+        }
+        .shimmer {
+            background: linear-gradient(90deg, transparent, rgba(255, 215, 0, 0.4), transparent);
+            background-size: 200% 100%;
+            animation: shimmer 2s infinite;
+        }
+        .ai-shimmer {
+            background: linear-gradient(90deg, transparent, rgba(0, 212, 255, 0.4), transparent);
+            background-size: 200% 100%;
+            animation: shimmer 2s infinite;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(-30px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+        @keyframes pulseGlow {
+            0%, 100% { box-shadow: 0 0 5px rgba(255, 215, 0, 0.3); }
+            50% { box-shadow: 0 0 20px rgba(255, 215, 0, 0.6); }
+        }
+        @keyframes aiPulse {
+            0%, 100% { box-shadow: 0 0 5px rgba(0, 212, 255, 0.3); }
+            50% { box-shadow: 0 0 20px rgba(0, 212, 255, 0.6); }
+        }
+        @keyframes floating {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+        @keyframes shimmer {
+            0% { background-position: -200% 0; }
+            100% { background-position: 200% 0; }
+        }
+        .toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            animation: slideInRight 0.5s ease-out;
+        }
+        @keyframes slideInRight {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        .chart-container {
+            position: relative;
+            height: 300px;
+            background: rgba(26, 26, 26, 0.5);
+            border-radius: 12px;
+            padding: 20px;
+        }
+        .ai-insight {
+            background: linear-gradient(135deg, rgba(0, 212, 255, 0.1), rgba(139, 92, 246, 0.1));
+            border: 1px solid rgba(0, 212, 255, 0.3);
+        }
+        .voice-command {
+            background: linear-gradient(135deg, #FFD700, #FFA500);
+            color: #000;
+            font-weight: bold;
+        }
+        .map-container {
+            height: 400px;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+        .ai-chat {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 350px;
+            height: 500px;
+            background: #1a1a1a;
+            border: 1px solid #FFD700;
+            border-radius: 12px;
+            z-index: 1000;
+            display: none;
+        }
+        .ai-chat-header {
+            background: linear-gradient(135deg, #00D4FF, #8B5CF6);
+            padding: 15px;
+            border-radius: 12px 12px 0 0;
+        }
+        .ai-chat-messages {
+            height: 350px;
+            overflow-y: auto;
+            padding: 15px;
+        }
+        .ai-chat-input {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 15px;
+            border-top: 1px solid #FFD700;
+        }
+        .ai-message {
+            background: rgba(0, 212, 255, 0.1);
+            border: 1px solid rgba(0, 212, 255, 0.3);
+            padding: 10px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+        }
+        .user-message {
+            background: rgba(255, 215, 0, 0.1);
+            border: 1px solid rgba(255, 215, 0, 0.3);
+            margin-left: 50px;
+        }
+    </style>
+</head>
+<body class="bg-dark-bg text-white min-h-screen gradient-bg">
+    <!-- AI Chat Assistant -->
+    <div id="ai-chat" class="ai-chat">
+        <div class="ai-chat-header">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-2">
+                    <i class="fas fa-robot text-white text-xl"></i>
+                    <span class="text-white font-bold">AI Assistant</span>
+                </div>
+                <button onclick="toggleAIChat()" class="text-white hover:text-gray-300">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+        </div>
+        <div class="ai-chat-messages" id="ai-messages">
+            <div class="ai-message">
+                <p class="text-sm">Hello! I'm your AI assistant. I can help you analyze data, predict trends, and optimize your valet operations. Try asking me about performance insights!</p>
+            </div>
+        </div>
+        <div class="ai-chat-input">
+            <div class="flex space-x-2">
+                <input type="text" id="ai-input" placeholder="Ask me anything..." 
+                       class="flex-1 px-3 py-2 bg-card-bg border border-border-gold rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-ai-blue">
+                <button onclick="sendAIMessage()" class="px-4 py-2 bg-ai-blue text-black rounded-lg hover:bg-opacity-80 transition-colors">
+                    <i class="fas fa-paper-plane"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Header -->
+    <header class="bg-card-bg border-b border-border-gold sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <!-- Logo -->
+                <div class="flex items-center">
+                    <div class="flex-shrink-0">
+                        <h1 class="text-2xl font-bold text-vegas-gold">Open Door Valet</h1>
+                        <span class="text-xs text-ai-blue">AI-Powered</span>
+                    </div>
+                </div>
+                
+                <!-- Search Bar -->
+                <div class="flex-1 max-w-lg mx-8">
+                    <div class="relative">
+                        <input type="text" placeholder="Search tickets, clients, locations..." 
+                               class="w-full px-4 py-2 bg-card-bg border border-border-gold rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-vegas-gold focus:border-transparent">
+                        <i class="fas fa-search absolute right-3 top-3 text-vegas-gold"></i>
+                    </div>
+                </div>
+                
+                <!-- AI & User Controls -->
+                <div class="flex items-center space-x-4">
+                    <button onclick="toggleAIChat()" class="relative p-2 text-ai-blue hover:text-ai-purple transition-colors ai-pulse">
+                        <i class="fas fa-robot text-xl"></i>
+                    </button>
+                    <button onclick="startVoiceCommand()" class="relative p-2 text-vegas-gold hover:text-vegas-gold-bright transition-colors">
+                        <i class="fas fa-microphone text-xl"></i>
+                    </button>
+                    <button class="relative p-2 text-vegas-gold hover:text-vegas-gold-bright transition-colors" onclick="showToast('You have 3 new notifications', 'info')">
+                        <i class="fas fa-bell text-xl"></i>
+                        <span class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">3</span>
+                    </button>
+                    <div class="flex items-center space-x-2">
+                        <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=40&h=40&fit=crop&crop=face" 
+                             alt="Profile" class="w-8 h-8 rounded-full border-2 border-vegas-gold">
+                        <span class="text-sm font-medium">John Doe</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Navigation Tabs -->
+    <nav class="bg-card-bg border-b border-border-gold">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex space-x-8">
+                <button onclick="showPage('dashboard')" class="nav-tab active py-4 px-1 border-b-2 border-vegas-gold text-vegas-gold font-medium">
+                    <i class="fas fa-tachometer-alt mr-2"></i>Dashboard
+                </button>
+                <button onclick="showPage('analytics')" class="nav-tab py-4 px-1 border-b-2 border-transparent text-gray-400 hover:text-vegas-gold font-medium">
+                    <i class="fas fa-chart-line mr-2"></i>Analytics
+                </button>
+                <button onclick="showPage('locations')" class="nav-tab py-4 px-1 border-b-2 border-transparent text-gray-400 hover:text-vegas-gold font-medium">
+                    <i class="fas fa-map-marker-alt mr-2"></i>Locations
+                </button>
+                <button onclick="showPage('ai-insights')" class="nav-tab py-4 px-1 border-b-2 border-transparent text-gray-400 hover:text-ai-blue font-medium">
+                    <i class="fas fa-brain mr-2"></i>AI Insights
+                </button>
+                <button onclick="showPage('tickets')" class="nav-tab py-4 px-1 border-b-2 border-transparent text-gray-400 hover:text-vegas-gold font-medium">
+                    <i class="fas fa-ticket-alt mr-2"></i>Tickets
+                </button>
+                <button onclick="showPage('team')" class="nav-tab py-4 px-1 border-b-2 border-transparent text-gray-400 hover:text-vegas-gold font-medium">
+                    <i class="fas fa-users mr-2"></i>Team
+                </button>
+                <button onclick="showPage('clients')" class="nav-tab py-4 px-1 border-b-2 border-transparent text-gray-400 hover:text-vegas-gold font-medium">
+                    <i class="fas fa-user-tie mr-2"></i>Clients
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <!-- Dashboard Page -->
+        <div id="dashboard-page" class="page-content">
+            <!-- AI-Powered Stats Overview -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                <div class="glass-effect rounded-xl p-6 hover-glow transition-all duration-300 fade-in pulse-glow">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm font-medium text-gray-400">Total Tickets</p>
+                            <p class="text-3xl font-bold text-vegas-gold" id="total-tickets">247</p>
+                            <div class="flex items-center mt-2">
+                                <div class="w-16 bg-gray-700 rounded-full h-2 mr-3">
+                                    <div class="progress-bar h-2 rounded-full" style="width: 85%"></div>
+                                </div>
+                                <p class="text-sm text-green-400 flex items-center">
+                                    <i class="fas fa-arrow-up mr-1"></i>+12%
+                                </p>
+                            </div>
+                        </div>
+                        <div class="p-3 bg-vegas-gold bg-opacity-20 rounded-lg floating">
+                            <i class="fas fa-ticket-alt text-2xl text-vegas-gold"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="glass-effect rounded-xl p-6 hover-glow transition-all duration-300 fade-in">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm font-medium text-gray-400">AI Predictions</p>
+                            <p class="text-3xl font-bold text-ai-blue" id="ai-predictions">94%</p>
+                            <div class="flex items-center mt-2">
+                                <div class="w-16 bg-gray-700 rounded-full h-2 mr-3">
+                                    <div class="h-2 rounded-full ai-gradient" style="width: 94%"></div>
+                                </div>
+                                <p class="text-sm text-ai-blue flex items-center">
+                                    <i class="fas fa-brain mr-1"></i>Accuracy
+                                </p>
+                            </div>
+                        </div>
+                        <div class="p-3 bg-ai-blue bg-opacity-20 rounded-lg floating" style="animation-delay: 0.5s;">
+                            <i class="fas fa-brain text-2xl text-ai-blue"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="glass-effect rounded-xl p-6 hover-glow transition-all duration-300 fade-in">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm font-medium text-gray-400">Revenue</p>
+                            <p class="text-3xl font-bold text-vegas-gold" id="revenue">$24.7K</p>
+                            <div class="flex items-center mt-2">
+                                <div class="w-16 bg-gray-700 rounded-full h-2 mr-3">
+                                    <div class="progress-bar h-2 rounded-full" style="width: 92%"></div>
+                                </div>
+                                <p class="text-sm text-green-400 flex items-center">
+                                    <i class="fas fa-arrow-up mr-1"></i>+8.5%
+                                </p>
+                            </div>
+                        </div>
+                        <div class="p-3 bg-vegas-gold bg-opacity-20 rounded-lg floating" style="animation-delay: 1s;">
+                            <i class="fas fa-dollar-sign text-2xl text-vegas-gold"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="glass-effect rounded-xl p-6 hover-glow transition-all duration-300 fade-in">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm font-medium text-gray-400">Efficiency</p>
+                            <p class="text-3xl font-bold text-ai-purple" id="efficiency">87%</p>
+                            <div class="flex items-center mt-2">
+                                <div class="w-16 bg-gray-700 rounded-full h-2 mr-3">
+                                    <div class="h-2 rounded-full" style="background: linear-gradient(90deg, #8B5CF6, #00D4FF); width: 87%"></div>
+                                </div>
+                                <p class="text-sm text-ai-purple flex items-center">
+                                    <i class="fas fa-cog mr-1"></i>Optimized
+                                </p>
+                            </div>
+                        </div>
+                        <div class="p-3 bg-ai-purple bg-opacity-20 rounded-lg floating" style="animation-delay: 1.5s;">
+                            <i class="fas fa-cog text-2xl text-ai-purple"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- AI Insights Panel -->
+            <div class="ai-insight rounded-xl p-6 mb-8">
+                <div class="flex items-center justify-between mb-4">
+                    <h2 class="text-xl font-bold text-ai-blue">
+                        <i class="fas fa-brain mr-2"></i>AI Insights & Recommendations
+                    </h2>
+                    <span class="px-3 py-1 bg-ai-blue bg-opacity-20 text-ai-blue text-sm rounded-full ai-pulse">Live Analysis</span>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div class="bg-card-bg rounded-lg p-4 border border-ai-blue border-opacity-30">
+                        <div class="flex items-center space-x-2 mb-2">
+                            <i class="fas fa-lightbulb text-ai-blue"></i>
+                            <span class="text-ai-blue font-semibold">Optimization</span>
+                        </div>
+                        <p class="text-sm text-gray-300">Peak hours at Luxury Hotel are 6-8 PM. Consider adding 2 more valets during this time.</p>
+                    </div>
+                    <div class="bg-card-bg rounded-lg p-4 border border-ai-blue border-opacity-30">
+                        <div class="flex items-center space-x-2 mb-2">
+                            <i class="fas fa-chart-line text-ai-blue"></i>
+                            <span class="text-ai-blue font-semibold">Prediction</span>
+                        </div>
+                        <p class="text-sm text-gray-300">Revenue expected to increase 15% next week based on event bookings and weather patterns.</p>
+                    </div>
+                    <div class="bg-card-bg rounded-lg p-4 border border-ai-blue border-opacity-30">
+                        <div class="flex items-center space-x-2 mb-2">
+                            <i class="fas fa-exclamation-triangle text-ai-blue"></i>
+                            <span class="text-ai-blue font-semibold">Alert</span>
+                        </div>
+                        <p class="text-sm text-gray-300">Event Center maintenance scheduled. Redirect valets to Restaurant Plaza for optimal coverage.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Advanced Charts -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+                <div class="glass-effect rounded-xl p-6">
+                    <h3 class="text-lg font-bold text-vegas-gold mb-4">Revenue Trends</h3>
+                    <div class="chart-container">
+                        <canvas id="revenueChart"></canvas>
+                    </div>
+                </div>
+                <div class="glass-effect rounded-xl p-6">
+                    <h3 class="text-lg font-bold text-vegas-gold mb-4">Performance Metrics</h3>
+                    <div class="chart-container">
+                        <canvas id="performanceChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Real-time Activity Feed -->
+            <div class="glass-effect rounded-xl p-6 mb-8">
+                <div class="flex items-center justify-between mb-4">
+                    <h2 class="text-xl font-bold text-vegas-gold">Live Activity Feed</h2>
+                    <div class="flex items-center space-x-2">
+                        <div class="w-3 h-3 bg-green-500 rounded-full pulse-glow"></div>
+                        <span class="text-sm text-green-400">Live</span>
+                    </div>
+                </div>
+                <div class="space-y-3" id="activity-feed">
+                    <div class="flex items-center space-x-3 p-3 bg-card-bg rounded-lg border border-border-gold slide-in">
+                        <div class="w-2 h-2 bg-ai-blue rounded-full ai-pulse"></div>
+                        <div class="flex-1">
+                            <p class="text-sm text-white">AI detected unusual traffic pattern at Restaurant Plaza</p>
+                            <p class="text-xs text-gray-400">2 minutes ago</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center space-x-3 p-3 bg-card-bg rounded-lg border border-border-gold slide-in">
+                        <div class="w-2 h-2 bg-vegas-gold rounded-full"></div>
+                        <div class="flex-1">
+                            <p class="text-sm text-white">New ticket #VAL-2024-004 created at Luxury Hotel</p>
+                            <p class="text-xs text-gray-400">5 minutes ago</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center space-x-3 p-3 bg-card-bg rounded-lg border border-border-gold slide-in">
+                        <div class="w-2 h-2 bg-green-500 rounded-full"></div>
+                        <div class="flex-1">
+                            <p class="text-sm text-white">Mike Johnson completed valet service at Restaurant</p>
+                            <p class="text-xs text-gray-400">8 minutes ago</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- AI Insights Page -->
+        <div id="ai-insights-page" class="page-content hidden">
+            <div class="flex justify-between items-center mb-8">
+                <div>
+                    <h1 class="text-3xl font-bold text-ai-blue">AI Insights & Analytics</h1>
+                    <p class="text-gray-400 mt-2">Advanced AI-powered insights and predictions</p>
+                </div>
+                <button onclick="generateAIReport()" class="ai-gradient text-black px-6 py-3 rounded-lg font-semibold hover:opacity-80 transition-opacity">
+                    <i class="fas fa-magic mr-2"></i>Generate Report
+                </button>
+            </div>
+
+            <!-- AI Predictions Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                <div class="ai-insight rounded-xl p-6 ai-glow transition-all duration-300">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm font-medium text-gray-400">Demand Forecast</p>
+                            <p class="text-2xl font-bold text-ai-blue">High</p>
+                            <p class="text-xs text-ai-blue">Next 24 hours</p>
+                        </div>
+                        <i class="fas fa-chart-line text-2xl text-ai-blue"></i>
+                    </div>
+                </div>
+                <div class="ai-insight rounded-xl p-6 ai-glow transition-all duration-300">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm font-medium text-gray-400">Optimal Staffing</p>
+                            <p class="text-2xl font-bold text-ai-purple">12</p>
+                            <p class="text-xs text-ai-purple">Valets needed</p>
+                        </div>
+                        <i class="fas fa-users text-2xl text-ai-purple"></i>
+                    </div>
+                </div>
+                <div class="ai-insight rounded-xl p-6 ai-glow transition-all duration-300">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm font-medium text-gray-400">Revenue Prediction</p>
+                            <p class="text-2xl font-bold text-vegas-gold">$28.5K</p>
+                            <p class="text-xs text-vegas-gold">This week</p>
+                        </div>
+                        <i class="fas fa-dollar-sign text-2xl text-vegas-gold"></i>
+                    </div>
+                </div>
+                <div class="ai-insight rounded-xl p-6 ai-glow transition-all duration-300">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm font-medium text-gray-400">Risk Score</p>
+                            <p class="text-2xl font-bold text-green-400">Low</p>
+                            <p class="text-xs text-green-400">Operational risk</p>
+                        </div>
+                        <i class="fas fa-shield-alt text-2xl text-green-400"></i>
+                    </div>
+                </div>
+            </div>
+
+            <!-- AI Analysis Charts -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <div class="glass-effect rounded-xl p-6">
+                    <h3 class="text-lg font-bold text-ai-blue mb-4">AI Demand Prediction</h3>
+                    <div class="chart-container">
+                        <canvas id="demandChart"></canvas>
+                    </div>
+                </div>
+                <div class="glass-effect rounded-xl p-6">
+                    <h3 class="text-lg font-bold text-ai-blue mb-4">Performance Optimization</h3>
+                    <div class="chart-container">
+                        <canvas id="optimizationChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Other Pages (Placeholders) -->
+        <div id="analytics-page" class="page-content hidden">
+            <div class="glass-effect rounded-xl p-8 text-center">
+                <i class="fas fa-chart-line text-6xl text-vegas-gold mb-4"></i>
+                <h2 class="text-2xl font-bold text-vegas-gold mb-2">Advanced Analytics</h2>
+                <p class="text-gray-400">Detailed analytics and reporting</p>
+            </div>
+        </div>
+
+        <div id="locations-page" class="page-content hidden">
+            <div class="glass-effect rounded-xl p-8 text-center">
+                <i class="fas fa-map-marker-alt text-6xl text-vegas-gold mb-4"></i>
+                <h2 class="text-2xl font-bold text-vegas-gold mb-2">Locations Management</h2>
+                <p class="text-gray-400">Manage and monitor all valet service locations</p>
+            </div>
+        </div>
+
+        <div id="tickets-page" class="page-content hidden">
+            <div class="glass-effect rounded-xl p-8 text-center">
+                <i class="fas fa-ticket-alt text-6xl text-vegas-gold mb-4"></i>
+                <h2 class="text-2xl font-bold text-vegas-gold mb-2">Tickets Management</h2>
+                <p class="text-gray-400">View and manage all valet tickets</p>
+            </div>
+        </div>
+
+        <div id="team-page" class="page-content hidden">
+            <!-- Valets Management Header -->
+            <div class="flex justify-between items-center mb-8">
+                <div>
+                    <h1 class="text-3xl font-bold text-vegas-gold">Valets Management</h1>
+                    <p class="text-gray-400 mt-2">Manage and monitor your valet team performance</p>
+                </div>
+                <div class="flex space-x-4">
+                    <button onclick="showToast('Add Valet clicked!', 'success')" class="bg-vegas-gold text-black px-6 py-3 rounded-lg font-semibold hover:bg-vegas-gold-bright transition-colors">
+                        <i class="fas fa-user-plus mr-2"></i>Add Valet
+                    </button>
+                    <button onclick="exportValetsData()" class="bg-ai-blue text-black px-6 py-3 rounded-lg font-semibold hover:bg-opacity-80 transition-opacity">
+                        <i class="fas fa-download mr-2"></i>Export
+                    </button>
+                </div>
+            </div>
+
+            <!-- Valets Stats -->
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+                <div class="glass-effect rounded-xl p-6 hover-glow transition-all duration-300">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm font-medium text-gray-400">Total Valets</p>
+                            <p class="text-2xl font-bold text-vegas-gold">18</p>
+                        </div>
+                        <i class="fas fa-users text-2xl text-vegas-gold"></i>
+                    </div>
+                </div>
+                <div class="glass-effect rounded-xl p-6 hover-glow transition-all duration-300">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm font-medium text-gray-400">Active Now</p>
+                            <p class="text-2xl font-bold text-green-400">12</p>
+                        </div>
+                        <i class="fas fa-check-circle text-2xl text-green-400"></i>
+                    </div>
+                </div>
+                <div class="glass-effect rounded-xl p-6 hover-glow transition-all duration-300">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm font-medium text-gray-400">Avg Rating</p>
+                            <p class="text-2xl font-bold text-yellow-400">4.8</p>
+                        </div>
+                        <i class="fas fa-star text-2xl text-yellow-400"></i>
+                    </div>
+                </div>
+                <div class="glass-effect rounded-xl p-6 hover-glow transition-all duration-300">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm font-medium text-gray-400">Tickets Today</p>
+                            <p class="text-2xl font-bold text-ai-blue">156</p>
+                        </div>
+                        <i class="fas fa-ticket-alt text-2xl text-ai-blue"></i>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Search and Filters -->
+            <div class="glass-effect rounded-xl p-6 mb-8">
+                <div class="flex flex-col md:flex-row gap-4">
+                    <div class="flex-1">
+                        <input type="text" id="valet-search" placeholder="Search valets by name, ID, or location..." 
+                               class="w-full px-4 py-2 bg-card-bg border border-border-gold rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-vegas-gold">
+                    </div>
+                    <select id="status-filter" class="px-4 py-2 bg-card-bg border border-border-gold rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-vegas-gold">
+                        <option value="">All Status</option>
+                        <option value="active">Active</option>
+                        <option value="break">On Break</option>
+                        <option value="offline">Offline</option>
+                        <option value="maintenance">Maintenance</option>
+                    </select>
+                    <select id="rating-filter" class="px-4 py-2 bg-card-bg border border-border-gold rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-vegas-gold">
+                        <option value="">All Ratings</option>
+                        <option value="5">5 Stars</option>
+                        <option value="4">4+ Stars</option>
+                        <option value="3">3+ Stars</option>
+                    </select>
+                    <button onclick="resetFilters()" class="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors">
+                        <i class="fas fa-refresh mr-2"></i>Reset
+                    </button>
+                </div>
+            </div>
+
+            <!-- Valets Table -->
+            <div class="glass-effect rounded-xl overflow-hidden">
+                <div class="data-table">
+                    <table class="w-full">
+                        <thead>
+                            <tr>
+                                <th class="cursor-pointer hover:bg-vegas-gold hover:bg-opacity-10" onclick="sortTable('name')">
+                                    <div class="flex items-center space-x-2">
+                                        <span>Valet</span>
+                                        <i class="fas fa-sort text-gray-400"></i>
+                                    </div>
+                                </th>
+                                <th class="cursor-pointer hover:bg-vegas-gold hover:bg-opacity-10" onclick="sortTable('status')">
+                                    <div class="flex items-center space-x-2">
+                                        <span>Status</span>
+                                        <i class="fas fa-sort text-gray-400"></i>
+                                    </div>
+                                </th>
+                                <th class="cursor-pointer hover:bg-vegas-gold hover:bg-opacity-10" onclick="sortTable('location')">
+                                    <div class="flex items-center space-x-2">
+                                        <span>Location</span>
+                                        <i class="fas fa-sort text-gray-400"></i>
+                                    </div>
+                                </th>
+                                <th class="cursor-pointer hover:bg-vegas-gold hover:bg-opacity-10" onclick="sortTable('tickets')">
+                                    <div class="flex items-center space-x-2">
+                                        <span>Tickets Today</span>
+                                        <i class="fas fa-sort text-gray-400"></i>
+                                    </div>
+                                </th>
+                                <th class="cursor-pointer hover:bg-vegas-gold hover:bg-opacity-10" onclick="sortTable('rating')">
+                                    <div class="flex items-center space-x-2">
+                                        <span>Rating</span>
+                                        <i class="fas fa-sort text-gray-400"></i>
+                                    </div>
+                                </th>
+                                <th class="cursor-pointer hover:bg-vegas-gold hover:bg-opacity-10" onclick="sortTable('revenue')">
+                                    <div class="flex items-center space-x-2">
+                                        <span>Revenue</span>
+                                        <i class="fas fa-sort text-gray-400"></i>
+                                    </div>
+                                </th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="valets-table-body">
+                            <!-- Valet Row 1 -->
+                            <tr class="hover:bg-vegas-gold hover:bg-opacity-5">
+                                <td>
+                                    <div class="flex items-center space-x-3">
+                                        <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=40&h=40&fit=crop&crop=face" 
+                                             alt="Valet" class="w-10 h-10 rounded-full border-2 border-vegas-gold">
+                                        <div>
+                                            <p class="font-medium text-white">Mike Johnson</p>
+                                            <p class="text-sm text-gray-400">#VAL-001</p>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="px-3 py-1 bg-green-500 bg-opacity-20 text-green-400 text-sm rounded-full flex items-center w-fit">
+                                        <div class="w-2 h-2 bg-green-500 rounded-full mr-2 pulse-glow"></div>
+                                        Active
+                                    </span>
+                                </td>
+                                <td>
+                                    <div class="flex items-center space-x-2">
+                                        <i class="fas fa-map-marker-alt text-vegas-gold"></i>
+                                        <span class="text-white">Luxury Hotel</span>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="text-vegas-gold font-semibold">24</span>
+                                </td>
+                                <td>
+                                    <div class="flex items-center space-x-1">
+                                        <i class="fas fa-star text-yellow-400"></i>
+                                        <i class="fas fa-star text-yellow-400"></i>
+                                        <i class="fas fa-star text-yellow-400"></i>
+                                        <i class="fas fa-star text-yellow-400"></i>
+                                        <i class="fas fa-star text-yellow-400"></i>
+                                        <span class="text-white ml-2">4.9</span>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="text-vegas-gold font-semibold">$1,200</span>
+                                </td>
+                                <td>
+                                    <div class="flex space-x-2">
+                                        <button onclick="viewValetProfile('VAL-001')" class="text-vegas-gold hover:text-vegas-gold-bright transition-colors">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                        <button onclick="editValet('VAL-001')" class="text-blue-400 hover:text-blue-300 transition-colors">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                        <button onclick="assignValet('VAL-001')" class="text-green-400 hover:text-green-300 transition-colors">
+                                            <i class="fas fa-map-marker-plus"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+
+                            <!-- Valet Row 2 -->
+                            <tr class="hover:bg-vegas-gold hover:bg-opacity-5">
+                                <td>
+                                    <div class="flex items-center space-x-3">
+                                        <img src="https://images.unsplash.com/photo-1494790108755-2616b612b786?w=40&h=40&fit=crop&crop=face" 
+                                             alt="Valet" class="w-10 h-10 rounded-full border-2 border-vegas-gold">
+                                        <div>
+                                            <p class="font-medium text-white">Sarah Wilson</p>
+                                            <p class="text-sm text-gray-400">#VAL-002</p>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="px-3 py-1 bg-yellow-500 bg-opacity-20 text-yellow-400 text-sm rounded-full flex items-center w-fit">
+                                        <div class="w-2 h-2 bg-yellow-500 rounded-full mr-2"></div>
+                                        On Break
+                                    </span>
+                                </td>
+                                <td>
+                                    <div class="flex items-center space-x-2">
+                                        <i class="fas fa-map-marker-alt text-vegas-gold"></i>
+                                        <span class="text-white">Restaurant Plaza</span>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="text-vegas-gold font-semibold">18</span>
+                                </td>
+                                <td>
+                                    <div class="flex items-center space-x-1">
+                                        <i class="fas fa-star text-yellow-400"></i>
+                                        <i class="fas fa-star text-yellow-400"></i>
+                                        <i class="fas fa-star text-yellow-400"></i>
+                                        <i class="fas fa-star text-yellow-400"></i>
+                                        <i class="fas fa-star text-gray-400"></i>
+                                        <span class="text-white ml-2">4.7</span>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="text-vegas-gold font-semibold">$900</span>
+                                </td>
+                                <td>
+                                    <div class="flex space-x-2">
+                                        <button onclick="viewValetProfile('VAL-002')" class="text-vegas-gold hover:text-vegas-gold-bright transition-colors">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                        <button onclick="editValet('VAL-002')" class="text-blue-400 hover:text-blue-300 transition-colors">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                        <button onclick="assignValet('VAL-002')" class="text-green-400 hover:text-green-300 transition-colors">
+                                            <i class="fas fa-map-marker-plus"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+
+                            <!-- Valet Row 3 -->
+                            <tr class="hover:bg-vegas-gold hover:bg-opacity-5">
+                                <td>
+                                    <div class="flex items-center space-x-3">
+                                        <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=40&h=40&fit=crop&crop=face" 
+                                             alt="Valet" class="w-10 h-10 rounded-full border-2 border-vegas-gold">
+                                        <div>
+                                            <p class="font-medium text-white">David Brown</p>
+                                            <p class="text-sm text-gray-400">#VAL-003</p>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="px-3 py-1 bg-red-500 bg-opacity-20 text-red-400 text-sm rounded-full flex items-center w-fit">
+                                        <div class="w-2 h-2 bg-red-500 rounded-full mr-2"></div>
+                                        Offline
+                                    </span>
+                                </td>
+                                <td>
+                                    <div class="flex items-center space-x-2">
+                                        <i class="fas fa-map-marker-alt text-gray-400"></i>
+                                        <span class="text-gray-400">Not Assigned</span>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="text-gray-400">0</span>
+                                </td>
+                                <td>
+                                    <div class="flex items-center space-x-1">
+                                        <i class="fas fa-star text-yellow-400"></i>
+                                        <i class="fas fa-star text-yellow-400"></i>
+                                        <i class="fas fa-star text-yellow-400"></i>
+                                        <i class="fas fa-star text-yellow-400"></i>
+                                        <i class="fas fa-star text-gray-400"></i>
+                                        <span class="text-white ml-2">4.6</span>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="text-gray-400">$0</span>
+                                </td>
+                                <td>
+                                    <div class="flex space-x-2">
+                                        <button onclick="viewValetProfile('VAL-003')" class="text-vegas-gold hover:text-vegas-gold-bright transition-colors">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                        <button onclick="editValet('VAL-003')" class="text-blue-400 hover:text-blue-300 transition-colors">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                        <button onclick="assignValet('VAL-003')" class="text-green-400 hover:text-green-300 transition-colors">
+                                            <i class="fas fa-map-marker-plus"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+
+                            <!-- Valet Row 4 -->
+                            <tr class="hover:bg-vegas-gold hover:bg-opacity-5">
+                                <td>
+                                    <div class="flex items-center space-x-3">
+                                        <img src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=40&h=40&fit=crop&crop=face" 
+                                             alt="Valet" class="w-10 h-10 rounded-full border-2 border-vegas-gold">
+                                        <div>
+                                            <p class="font-medium text-white">Alex Rodriguez</p>
+                                            <p class="text-sm text-gray-400">#VAL-004</p>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="px-3 py-1 bg-green-500 bg-opacity-20 text-green-400 text-sm rounded-full flex items-center w-fit">
+                                        <div class="w-2 h-2 bg-green-500 rounded-full mr-2 pulse-glow"></div>
+                                        Active
+                                    </span>
+                                </td>
+                                <td>
+                                    <div class="flex items-center space-x-2">
+                                        <i class="fas fa-map-marker-alt text-vegas-gold"></i>
+                                        <span class="text-white">Event Center</span>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="text-vegas-gold font-semibold">31</span>
+                                </td>
+                                <td>
+                                    <div class="flex items-center space-x-1">
+                                        <i class="fas fa-star text-yellow-400"></i>
+                                        <i class="fas fa-star text-yellow-400"></i>
+                                        <i class="fas fa-star text-yellow-400"></i>
+                                        <i class="fas fa-star text-yellow-400"></i>
+                                        <i class="fas fa-star text-yellow-400"></i>
+                                        <span class="text-white ml-2">5.0</span>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="text-vegas-gold font-semibold">$1,550</span>
+                                </td>
+                                <td>
+                                    <div class="flex space-x-2">
+                                        <button onclick="viewValetProfile('VAL-004')" class="text-vegas-gold hover:text-vegas-gold-bright transition-colors">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                        <button onclick="editValet('VAL-004')" class="text-blue-400 hover:text-blue-300 transition-colors">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                        <button onclick="assignValet('VAL-004')" class="text-green-400 hover:text-green-300 transition-colors">
+                                            <i class="fas fa-map-marker-plus"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+
+                            <!-- Valet Row 5 -->
+                            <tr class="hover:bg-vegas-gold hover:bg-opacity-5">
+                                <td>
+                                    <div class="flex items-center space-x-3">
+                                        <img src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=40&h=40&fit=crop&crop=face" 
+                                             alt="Valet" class="w-10 h-10 rounded-full border-2 border-vegas-gold">
+                                        <div>
+                                            <p class="font-medium text-white">Emma Thompson</p>
+                                            <p class="text-sm text-gray-400">#VAL-005</p>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="px-3 py-1 bg-purple-500 bg-opacity-20 text-purple-400 text-sm rounded-full flex items-center w-fit">
+                                        <div class="w-2 h-2 bg-purple-500 rounded-full mr-2"></div>
+                                        Maintenance
+                                    </span>
+                                </td>
+                                <td>
+                                    <div class="flex items-center space-x-2">
+                                        <i class="fas fa-map-marker-alt text-gray-400"></i>
+                                        <span class="text-gray-400">Not Assigned</span>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="text-gray-400">0</span>
+                                </td>
+                                <td>
+                                    <div class="flex items-center space-x-1">
+                                        <i class="fas fa-star text-yellow-400"></i>
+                                        <i class="fas fa-star text-yellow-400"></i>
+                                        <i class="fas fa-star text-yellow-400"></i>
+                                        <i class="fas fa-star text-yellow-400"></i>
+                                        <i class="fas fa-star text-gray-400"></i>
+                                        <span class="text-white ml-2">4.8</span>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="text-gray-400">$0</span>
+                                </td>
+                                <td>
+                                    <div class="flex space-x-2">
+                                        <button onclick="viewValetProfile('VAL-005')" class="text-vegas-gold hover:text-vegas-gold-bright transition-colors">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                        <button onclick="editValet('VAL-005')" class="text-blue-400 hover:text-blue-300 transition-colors">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                        <button onclick="assignValet('VAL-005')" class="text-green-400 hover:text-green-300 transition-colors">
+                                            <i class="fas fa-map-marker-plus"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Pagination -->
+            <div class="flex justify-between items-center mt-6">
+                <div class="text-gray-400">
+                    Showing <span class="text-vegas-gold font-semibold">1-5</span> of <span class="text-vegas-gold font-semibold">18</span> valets
+                </div>
+                <div class="flex space-x-2">
+                    <button class="px-3 py-2 bg-card-bg border border-border-gold rounded-lg text-vegas-gold hover:bg-vegas-gold hover:text-black transition-colors">
+                        <i class="fas fa-chevron-left"></i>
+                    </button>
+                    <button class="px-3 py-2 bg-vegas-gold text-black rounded-lg font-semibold">1</button>
+                    <button class="px-3 py-2 bg-card-bg border border-border-gold rounded-lg text-vegas-gold hover:bg-vegas-gold hover:text-black transition-colors">2</button>
+                    <button class="px-3 py-2 bg-card-bg border border-border-gold rounded-lg text-vegas-gold hover:bg-vegas-gold hover:text-black transition-colors">3</button>
+                    <button class="px-3 py-2 bg-card-bg border border-border-gold rounded-lg text-vegas-gold hover:bg-vegas-gold hover:text-black transition-colors">
+                        <i class="fas fa-chevron-right"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Clients Management Page -->
+        <div id="clients-page" class="page-content hidden">
+            <!-- Clients Management Header -->
+            <div class="flex justify-between items-center mb-8">
+                <div>
+                    <h1 class="text-3xl font-bold text-vegas-gold">Clients Management</h1>
+                    <p class="text-gray-400 mt-2">Manage client records, billing, and invoicing</p>
+                </div>
+                <div class="flex space-x-4">
+                    <button onclick="showToast('Add Client clicked!', 'success')" class="bg-vegas-gold text-black px-6 py-3 rounded-lg font-semibold hover:bg-vegas-gold-bright transition-colors">
+                        <i class="fas fa-user-plus mr-2"></i>Add Client
+                    </button>
+                    <button onclick="exportClientsData()" class="bg-ai-blue text-black px-6 py-3 rounded-lg font-semibold hover:bg-opacity-80 transition-opacity">
+                        <i class="fas fa-download mr-2"></i>Export
+                    </button>
+                    <button onclick="showToast('Bulk Invoice Generation clicked!', 'info')" class="bg-green-500 text-white px-6 py-3 rounded-lg font-semibold hover:bg-green-600 transition-colors">
+                        <i class="fas fa-file-invoice mr-2"></i>Bulk Invoice
+                    </button>
+                </div>
+            </div>
+
+            <!-- Clients Stats -->
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+                <div class="glass-effect rounded-xl p-6 hover-glow transition-all duration-300">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm font-medium text-gray-400">Total Clients</p>
+                            <p class="text-2xl font-bold text-vegas-gold">247</p>
+                        </div>
+                        <i class="fas fa-user-tie text-2xl text-vegas-gold"></i>
+                    </div>
+                </div>
+                <div class="glass-effect rounded-xl p-6 hover-glow transition-all duration-300">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm font-medium text-gray-400">Active Clients</p>
+                            <p class="text-2xl font-bold text-green-400">189</p>
+                        </div>
+                        <i class="fas fa-check-circle text-2xl text-green-400"></i>
+                    </div>
+                </div>
+                <div class="glass-effect rounded-xl p-6 hover-glow transition-all duration-300">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm font-medium text-gray-400">Outstanding Invoices</p>
+                            <p class="text-2xl font-bold text-yellow-400">23</p>
+                        </div>
+                        <i class="fas fa-exclamation-triangle text-2xl text-yellow-400"></i>
+                    </div>
+                </div>
+                <div class="glass-effect rounded-xl p-6 hover-glow transition-all duration-300">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm font-medium text-gray-400">Monthly Revenue</p>
+                            <p class="text-2xl font-bold text-ai-blue">$45.2K</p>
+                        </div>
+                        <i class="fas fa-dollar-sign text-2xl text-ai-blue"></i>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Search and Filters -->
+            <div class="glass-effect rounded-xl p-6 mb-8">
+                <div class="flex flex-col md:flex-row gap-4">
+                    <div class="flex-1">
+                        <input type="text" id="client-search" placeholder="Search clients by name, company, or email..." 
+                               class="w-full px-4 py-2 bg-card-bg border border-border-gold rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-vegas-gold">
+                    </div>
+                    <select id="client-status-filter" class="px-4 py-2 bg-card-bg border border-border-gold rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-vegas-gold">
+                        <option value="">All Status</option>
+                        <option value="active">Active</option>
+                        <option value="inactive">Inactive</option>
+                        <option value="pending">Pending</option>
+                        <option value="suspended">Suspended</option>
+                    </select>
+                    <select id="client-type-filter" class="px-4 py-2 bg-card-bg border border-border-gold rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-vegas-gold">
+                        <option value="">All Types</option>
+                        <option value="individual">Individual</option>
+                        <option value="corporate">Corporate</option>
+                        <option value="vip">VIP</option>
+                        <option value="premium">Premium</option>
+                    </select>
+                    <button onclick="resetClientFilters()" class="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors">
+                        <i class="fas fa-refresh mr-2"></i>Reset
+                    </button>
+                </div>
+            </div>
+
+            <!-- Clients Table -->
+            <div class="glass-effect rounded-xl overflow-hidden">
+                <div class="data-table">
+                    <table class="w-full">
+                        <thead>
+                            <tr>
+                                <th class="cursor-pointer hover:bg-vegas-gold hover:bg-opacity-10" onclick="sortTable('name')">
+                                    <div class="flex items-center space-x-2">
+                                        <span>Client</span>
+                                        <i class="fas fa-sort text-gray-400"></i>
+                                    </div>
+                                </th>
+                                <th class="cursor-pointer hover:bg-vegas-gold hover:bg-opacity-10" onclick="sortTable('company')">
+                                    <div class="flex items-center space-x-2">
+                                        <span>Company</span>
+                                        <i class="fas fa-sort text-gray-400"></i>
+                                    </div>
+                                </th>
+                                <th class="cursor-pointer hover:bg-vegas-gold hover:bg-opacity-10" onclick="sortTable('status')">
+                                    <div class="flex items-center space-x-2">
+                                        <span>Status</span>
+                                        <i class="fas fa-sort text-gray-400"></i>
+                                    </div>
+                                </th>
+                                <th class="cursor-pointer hover:bg-vegas-gold hover:bg-opacity-10" onclick="sortTable('type')">
+                                    <div class="flex items-center space-x-2">
+                                        <span>Type</span>
+                                        <i class="fas fa-sort text-gray-400"></i>
+                                    </div>
+                                </th>
+                                <th class="cursor-pointer hover:bg-vegas-gold hover:bg-opacity-10" onclick="sortTable('services')">
+                                    <div class="flex items-center space-x-2">
+                                        <span>Services</span>
+                                        <i class="fas fa-sort text-gray-400"></i>
+                                    </div>
+                                </th>
+                                <th class="cursor-pointer hover:bg-vegas-gold hover:bg-opacity-10" onclick="sortTable('balance')">
+                                    <div class="flex items-center space-x-2">
+                                        <span>Balance</span>
+                                        <i class="fas fa-sort text-gray-400"></i>
+                                    </div>
+                                </th>
+                                <th class="cursor-pointer hover:bg-vegas-gold hover:bg-opacity-10" onclick="sortTable('lastService')">
+                                    <div class="flex items-center space-x-2">
+                                        <span>Last Service</span>
+                                        <i class="fas fa-sort text-gray-400"></i>
+                                    </div>
+                                </th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="clients-table-body">
+                            <!-- Client Row 1 -->
+                            <tr class="hover:bg-vegas-gold hover:bg-opacity-5">
+                                <td>
+                                    <div class="flex items-center space-x-3">
+                                        <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=40&h=40&fit=crop&crop=face" 
+                                             alt="Client" class="w-10 h-10 rounded-full border-2 border-vegas-gold">
+                                        <div>
+                                            <p class="font-medium text-white">John Smith</p>
+                                            <p class="text-sm text-gray-400">john.smith@email.com</p>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="text-white">Luxury Hotels Group</span>
+                                </td>
+                                <td>
+                                    <span class="px-3 py-1 bg-green-500 bg-opacity-20 text-green-400 text-sm rounded-full flex items-center w-fit">
+                                        <div class="w-2 h-2 bg-green-500 rounded-full mr-2 pulse-glow"></div>
+                                        Active
+                                    </span>
+                                </td>
+                                <td>
+                                    <span class="px-2 py-1 bg-vegas-gold bg-opacity-20 text-vegas-gold text-xs rounded-full">VIP</span>
+                                </td>
+                                <td>
+                                    <span class="text-vegas-gold font-semibold">24</span>
+                                </td>
+                                <td>
+                                    <span class="text-green-400 font-semibold">$0.00</span>
+                                </td>
+                                <td>
+                                    <span class="text-white">2 hours ago</span>
+                                </td>
+                                <td>
+                                    <div class="flex space-x-2">
+                                        <button onclick="viewClientProfile('CLI-001')" class="text-vegas-gold hover:text-vegas-gold-bright transition-colors" title="View Profile">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                        <button onclick="editClient('CLI-001')" class="text-blue-400 hover:text-blue-300 transition-colors" title="Edit Client">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                        <button onclick="generateInvoice('CLI-001')" class="text-green-400 hover:text-green-300 transition-colors" title="Generate Invoice">
+                                            <i class="fas fa-file-invoice"></i>
+                                        </button>
+                                        <button onclick="viewBillingHistory('CLI-001')" class="text-purple-400 hover:text-purple-300 transition-colors" title="Billing History">
+                                            <i class="fas fa-history"></i>
+                                        </button>
+                                        <button onclick="sendClientNotification('CLI-001')" class="text-ai-blue hover:text-ai-purple transition-colors" title="Send Notification">
+                                            <i class="fas fa-bell"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+
+                            <!-- Client Row 2 -->
+                            <tr class="hover:bg-vegas-gold hover:bg-opacity-5">
+                                <td>
+                                    <div class="flex items-center space-x-3">
+                                        <img src="https://images.unsplash.com/photo-1494790108755-2616b612b786?w=40&h=40&fit=crop&crop=face" 
+                                             alt="Client" class="w-10 h-10 rounded-full border-2 border-vegas-gold">
+                                        <div>
+                                            <p class="font-medium text-white">Sarah Johnson</p>
+                                            <p class="text-sm text-gray-400">sarah.j@restaurant.com</p>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="text-white">Plaza Restaurant</span>
+                                </td>
+                                <td>
+                                    <span class="px-3 py-1 bg-green-500 bg-opacity-20 text-green-400 text-sm rounded-full flex items-center w-fit">
+                                        <div class="w-2 h-2 bg-green-500 rounded-full mr-2 pulse-glow"></div>
+                                        Active
+                                    </span>
+                                </td>
+                                <td>
+                                    <span class="px-2 py-1 bg-blue-500 bg-opacity-20 text-blue-400 text-xs rounded-full">Corporate</span>
+                                </td>
+                                <td>
+                                    <span class="text-vegas-gold font-semibold">18</span>
+                                </td>
+                                <td>
+                                    <span class="text-yellow-400 font-semibold">$450.00</span>
+                                </td>
+                                <td>
+                                    <span class="text-white">1 day ago</span>
+                                </td>
+                                <td>
+                                    <div class="flex space-x-2">
+                                        <button onclick="viewClientProfile('CLI-002')" class="text-vegas-gold hover:text-vegas-gold-bright transition-colors" title="View Profile">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                        <button onclick="editClient('CLI-002')" class="text-blue-400 hover:text-blue-300 transition-colors" title="Edit Client">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                        <button onclick="generateInvoice('CLI-002')" class="text-green-400 hover:text-green-300 transition-colors" title="Generate Invoice">
+                                            <i class="fas fa-file-invoice"></i>
+                                        </button>
+                                        <button onclick="viewBillingHistory('CLI-002')" class="text-purple-400 hover:text-purple-300 transition-colors" title="Billing History">
+                                            <i class="fas fa-history"></i>
+                                        </button>
+                                        <button onclick="sendClientNotification('CLI-002')" class="text-ai-blue hover:text-ai-purple transition-colors" title="Send Notification">
+                                            <i class="fas fa-bell"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+
+                            <!-- Client Row 3 -->
+                            <tr class="hover:bg-vegas-gold hover:bg-opacity-5">
+                                <td>
+                                    <div class="flex items-center space-x-3">
+                                        <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=40&h=40&fit=crop&crop=face" 
+                                             alt="Client" class="w-10 h-10 rounded-full border-2 border-vegas-gold">
+                                        <div>
+                                            <p class="font-medium text-white">Michael Brown</p>
+                                            <p class="text-sm text-gray-400">m.brown@events.com</p>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="text-white">Event Center LLC</span>
+                                </td>
+                                <td>
+                                    <span class="px-3 py-1 bg-yellow-500 bg-opacity-20 text-yellow-400 text-sm rounded-full flex items-center w-fit">
+                                        <div class="w-2 h-2 bg-yellow-500 rounded-full mr-2"></div>
+                                        Pending
+                                    </span>
+                                </td>
+                                <td>
+                                    <span class="px-2 py-1 bg-purple-500 bg-opacity-20 text-purple-400 text-xs rounded-full">Premium</span>
+                                </td>
+                                <td>
+                                    <span class="text-vegas-gold font-semibold">12</span>
+                                </td>
+                                <td>
+                                    <span class="text-red-400 font-semibold">$1,200.00</span>
+                                </td>
+                                <td>
+                                    <span class="text-white">3 days ago</span>
+                                </td>
+                                <td>
+                                    <div class="flex space-x-2">
+                                        <button onclick="viewClientProfile('CLI-003')" class="text-vegas-gold hover:text-vegas-gold-bright transition-colors" title="View Profile">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                        <button onclick="editClient('CLI-003')" class="text-blue-400 hover:text-blue-300 transition-colors" title="Edit Client">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                        <button onclick="generateInvoice('CLI-003')" class="text-green-400 hover:text-green-300 transition-colors" title="Generate Invoice">
+                                            <i class="fas fa-file-invoice"></i>
+                                        </button>
+                                        <button onclick="viewBillingHistory('CLI-003')" class="text-purple-400 hover:text-purple-300 transition-colors" title="Billing History">
+                                            <i class="fas fa-history"></i>
+                                        </button>
+                                        <button onclick="sendClientNotification('CLI-003')" class="text-ai-blue hover:text-ai-purple transition-colors" title="Send Notification">
+                                            <i class="fas fa-bell"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+
+                            <!-- Client Row 4 -->
+                            <tr class="hover:bg-vegas-gold hover:bg-opacity-5">
+                                <td>
+                                    <div class="flex items-center space-x-3">
+                                        <img src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=40&h=40&fit=crop&crop=face" 
+                                             alt="Client" class="w-10 h-10 rounded-full border-2 border-vegas-gold">
+                                        <div>
+                                            <p class="font-medium text-white">Alex Rodriguez</p>
+                                            <p class="text-sm text-gray-400">alex@mallcorp.com</p>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="text-white">Mall Corporation</span>
+                                </td>
+                                <td>
+                                    <span class="px-3 py-1 bg-green-500 bg-opacity-20 text-green-400 text-sm rounded-full flex items-center w-fit">
+                                        <div class="w-2 h-2 bg-green-500 rounded-full mr-2 pulse-glow"></div>
+                                        Active
+                                    </span>
+                                </td>
+                                <td>
+                                    <span class="px-2 py-1 bg-blue-500 bg-opacity-20 text-blue-400 text-xs rounded-full">Corporate</span>
+                                </td>
+                                <td>
+                                    <span class="text-vegas-gold font-semibold">31</span>
+                                </td>
+                                <td>
+                                    <span class="text-green-400 font-semibold">$0.00</span>
+                                </td>
+                                <td>
+                                    <span class="text-white">5 hours ago</span>
+                                </td>
+                                <td>
+                                    <div class="flex space-x-2">
+                                        <button onclick="viewClientProfile('CLI-004')" class="text-vegas-gold hover:text-vegas-gold-bright transition-colors" title="View Profile">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                        <button onclick="editClient('CLI-004')" class="text-blue-400 hover:text-blue-300 transition-colors" title="Edit Client">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                        <button onclick="generateInvoice('CLI-004')" class="text-green-400 hover:text-green-300 transition-colors" title="Generate Invoice">
+                                            <i class="fas fa-file-invoice"></i>
+                                        </button>
+                                        <button onclick="viewBillingHistory('CLI-004')" class="text-purple-400 hover:text-purple-300 transition-colors" title="Billing History">
+                                            <i class="fas fa-history"></i>
+                                        </button>
+                                        <button onclick="sendClientNotification('CLI-004')" class="text-ai-blue hover:text-ai-purple transition-colors" title="Send Notification">
+                                            <i class="fas fa-bell"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+
+                            <!-- Client Row 5 -->
+                            <tr class="hover:bg-vegas-gold hover:bg-opacity-5">
+                                <td>
+                                    <div class="flex items-center space-x-3">
+                                        <img src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=40&h=40&fit=crop&crop=face" 
+                                             alt="Client" class="w-10 h-10 rounded-full border-2 border-vegas-gold">
+                                        <div>
+                                            <p class="font-medium text-white">Emma Thompson</p>
+                                            <p class="text-sm text-gray-400">emma@individual.com</p>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="text-gray-400">-</span>
+                                </td>
+                                <td>
+                                    <span class="px-3 py-1 bg-red-500 bg-opacity-20 text-red-400 text-sm rounded-full flex items-center w-fit">
+                                        <div class="w-2 h-2 bg-red-500 rounded-full mr-2"></div>
+                                        Inactive
+                                    </span>
+                                </td>
+                                <td>
+                                    <span class="px-2 py-1 bg-gray-500 bg-opacity-20 text-gray-400 text-xs rounded-full">Individual</span>
+                                </td>
+                                <td>
+                                    <span class="text-gray-400">0</span>
+                                </td>
+                                <td>
+                                    <span class="text-red-400 font-semibold">$750.00</span>
+                                </td>
+                                <td>
+                                    <span class="text-gray-400">2 weeks ago</span>
+                                </td>
+                                <td>
+                                    <div class="flex space-x-2">
+                                        <button onclick="viewClientProfile('CLI-005')" class="text-vegas-gold hover:text-vegas-gold-bright transition-colors" title="View Profile">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                        <button onclick="editClient('CLI-005')" class="text-blue-400 hover:text-blue-300 transition-colors" title="Edit Client">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                        <button onclick="generateInvoice('CLI-005')" class="text-green-400 hover:text-green-300 transition-colors" title="Generate Invoice">
+                                            <i class="fas fa-file-invoice"></i>
+                                        </button>
+                                        <button onclick="viewBillingHistory('CLI-005')" class="text-purple-400 hover:text-purple-300 transition-colors" title="Billing History">
+                                            <i class="fas fa-history"></i>
+                                        </button>
+                                        <button onclick="sendClientNotification('CLI-005')" class="text-ai-blue hover:text-ai-purple transition-colors" title="Send Notification">
+                                            <i class="fas fa-bell"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Pagination -->
+            <div class="flex justify-between items-center mt-6">
+                <div class="text-gray-400">
+                    Showing <span class="text-vegas-gold font-semibold">1-5</span> of <span class="text-vegas-gold font-semibold">247</span> clients
+                </div>
+                <div class="flex space-x-2">
+                    <button class="px-3 py-2 bg-card-bg border border-border-gold rounded-lg text-vegas-gold hover:bg-vegas-gold hover:text-black transition-colors">
+                        <i class="fas fa-chevron-left"></i>
+                    </button>
+                    <button class="px-3 py-2 bg-vegas-gold text-black rounded-lg font-semibold">1</button>
+                    <button class="px-3 py-2 bg-card-bg border border-border-gold rounded-lg text-vegas-gold hover:bg-vegas-gold hover:text-black transition-colors">2</button>
+                    <button class="px-3 py-2 bg-card-bg border border-border-gold rounded-lg text-vegas-gold hover:bg-vegas-gold hover:text-black transition-colors">3</button>
+                    <button class="px-3 py-2 bg-card-bg border border-border-gold rounded-lg text-vegas-gold hover:bg-vegas-gold hover:text-black transition-colors">
+                        <i class="fas fa-chevron-right"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Billing Summary -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mt-8">
+                <div class="glass-effect rounded-xl p-6">
+                    <h3 class="text-lg font-bold text-vegas-gold mb-4">Outstanding Invoices</h3>
+                    <div class="space-y-3">
+                        <div class="flex items-center justify-between p-3 bg-card-bg rounded-lg border border-border-gold">
+                            <div>
+                                <p class="text-white font-medium">#INV-2024-001</p>
+                                <p class="text-sm text-gray-400">Luxury Hotels Group</p>
+                            </div>
+                            <div class="text-right">
+                                <p class="text-vegas-gold font-semibold">$2,400.00</p>
+                                <p class="text-xs text-red-400">Overdue</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center justify-between p-3 bg-card-bg rounded-lg border border-border-gold">
+                            <div>
+                                <p class="text-white font-medium">#INV-2024-002</p>
+                                <p class="text-sm text-gray-400">Event Center LLC</p>
+                            </div>
+                            <div class="text-right">
+                                <p class="text-vegas-gold font-semibold">$1,200.00</p>
+                                <p class="text-xs text-yellow-400">Due Soon</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="glass-effect rounded-xl p-6">
+                    <h3 class="text-lg font-bold text-vegas-gold mb-4">Recent Payments</h3>
+                    <div class="space-y-3">
+                        <div class="flex items-center justify-between p-3 bg-card-bg rounded-lg border border-border-gold">
+                            <div>
+                                <p class="text-white font-medium">#PAY-2024-001</p>
+                                <p class="text-sm text-gray-400">Mall Corporation</p>
+                            </div>
+                            <div class="text-right">
+                                <p class="text-green-400 font-semibold">$3,600.00</p>
+                                <p class="text-xs text-gray-400">2 hours ago</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center justify-between p-3 bg-card-bg rounded-lg border border-border-gold">
+                            <div>
+                                <p class="text-white font-medium">#PAY-2024-002</p>
+                                <p class="text-sm text-gray-400">Plaza Restaurant</p>
+                            </div>
+                            <div class="text-right">
+                                <p class="text-green-400 font-semibold">$900.00</p>
+                                <p class="text-xs text-gray-400">1 day ago</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="glass-effect rounded-xl p-6">
+                    <h3 class="text-lg font-bold text-vegas-gold mb-4">Quick Actions</h3>
+                    <div class="space-y-3">
+                        <button onclick="showToast('Bulk Invoice Generation started!', 'info')" class="w-full flex items-center justify-center p-3 bg-vegas-gold bg-opacity-20 border border-vegas-gold rounded-lg hover:bg-opacity-30 transition-all duration-300">
+                            <i class="fas fa-file-invoice mr-2 text-vegas-gold"></i>
+                            <span class="text-vegas-gold font-medium">Generate Bulk Invoices</span>
+                        </button>
+                        <button onclick="showToast('Payment reminders sent!', 'success')" class="w-full flex items-center justify-center p-3 bg-yellow-500 bg-opacity-20 border border-yellow-500 rounded-lg hover:bg-opacity-30 transition-all duration-300">
+                            <i class="fas fa-bell mr-2 text-yellow-400"></i>
+                            <span class="text-yellow-400 font-medium">Send Payment Reminders</span>
+                        </button>
+                        <button onclick="showToast('Client report generated!', 'info')" class="w-full flex items-center justify-center p-3 bg-ai-blue bg-opacity-20 border border-ai-blue rounded-lg hover:bg-opacity-30 transition-all duration-300">
+                            <i class="fas fa-chart-bar mr-2 text-ai-blue"></i>
+                            <span class="text-ai-blue font-medium">Generate Client Report</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Global state
+        let dashboardData = {
+            totalTickets: 247,
+            revenue: 24700,
+            efficiency: 87,
+            aiPredictions: 94
+        };
+
+        // Navigation functionality
+        function showPage(pageId) {
+            const pages = document.querySelectorAll('.page-content');
+            pages.forEach(page => page.classList.add('hidden'));
+            document.getElementById(pageId + '-page').classList.remove('hidden');
+            
+            const tabs = document.querySelectorAll('.nav-tab');
+            tabs.forEach(tab => {
+                tab.classList.remove('active', 'border-vegas-gold', 'text-vegas-gold', 'text-ai-blue');
+                tab.classList.add('border-transparent', 'text-gray-400');
+            });
+            
+            event.target.classList.add('active');
+            if (pageId === 'ai-insights') {
+                event.target.classList.add('border-ai-blue', 'text-ai-blue');
+            } else {
+                event.target.classList.add('border-vegas-gold', 'text-vegas-gold');
+            }
+            event.target.classList.remove('border-transparent', 'text-gray-400');
+        }
+
+        // AI Chat functionality
+        function toggleAIChat() {
+            const chat = document.getElementById('ai-chat');
+            chat.style.display = chat.style.display === 'none' ? 'block' : 'none';
+        }
+
+        function sendAIMessage() {
+            const input = document.getElementById('ai-input');
+            const messages = document.getElementById('ai-messages');
+            
+            if (input.value.trim()) {
+                // Add user message
+                const userMessage = document.createElement('div');
+                userMessage.className = 'user-message';
+                userMessage.innerHTML = `<p class="text-sm">${input.value}</p>`;
+                messages.appendChild(userMessage);
+                
+                // Simulate AI response
+                setTimeout(() => {
+                    const aiMessage = document.createElement('div');
+                    aiMessage.className = 'ai-message';
+                    aiMessage.innerHTML = `<p class="text-sm">Based on current data, I recommend optimizing your valet allocation at peak hours. Would you like me to generate a detailed report?</p>`;
+                    messages.appendChild(aiMessage);
+                    messages.scrollTop = messages.scrollHeight;
+                }, 1000);
+                
+                input.value = '';
+                messages.scrollTop = messages.scrollHeight;
+            }
+        }
+
+        // Voice command functionality
+        function startVoiceCommand() {
+            showToast('Voice command activated! Say "Show analytics" or "Generate report"', 'info');
+        }
+
+        // AI Report generation
+        function generateAIReport() {
+            showToast('AI is generating your personalized report...', 'info');
+            setTimeout(() => {
+                showToast('AI Report generated successfully!', 'success');
+            }, 2000);
+        }
+
+        // Real-time data simulation
+        function simulateRealTimeData() {
+            dashboardData.totalTickets += Math.floor(Math.random() * 3);
+            document.getElementById('total-tickets').textContent = dashboardData.totalTickets;
+            
+            dashboardData.revenue += Math.floor(Math.random() * 500);
+            document.getElementById('revenue').textContent = `$${(dashboardData.revenue / 1000).toFixed(1)}K`;
+            
+            // Update AI predictions
+            dashboardData.aiPredictions = Math.min(99, dashboardData.aiPredictions + Math.floor(Math.random() * 2));
+            document.getElementById('ai-predictions').textContent = dashboardData.aiPredictions + '%';
+            
+            addActivityItem();
+        }
+
+        function addActivityItem() {
+            const activities = [
+                { text: "AI detected unusual traffic pattern at Restaurant Plaza", type: "ai" },
+                { text: "New ticket #VAL-2024-" + String(Math.floor(Math.random() * 9000) + 1000) + " created", type: "ticket" },
+                { text: "Valet service completed at " + ["Luxury Hotel", "Restaurant", "Event Center"][Math.floor(Math.random() * 3)], type: "complete" },
+                { text: "AI optimization recommendation: Add valet at peak hours", type: "ai" }
+            ];
+            
+            const activity = activities[Math.floor(Math.random() * activities.length)];
+            const colors = { ai: "ai-blue", ticket: "vegas-gold", complete: "green-500" };
+            
+            const activityItem = document.createElement('div');
+            activityItem.className = 'flex items-center space-x-3 p-3 bg-card-bg rounded-lg border border-border-gold slide-in';
+            activityItem.innerHTML = `
+                <div class="w-2 h-2 bg-${colors[activity.type]} rounded-full ${activity.type === 'ai' ? 'ai-pulse' : ''}"></div>
+                <div class="flex-1">
+                    <p class="text-sm text-white">${activity.text}</p>
+                    <p class="text-xs text-gray-400">Just now</p>
+                </div>
+            `;
+            
+            const feed = document.getElementById('activity-feed');
+            feed.insertBefore(activityItem, feed.firstChild);
+            
+            while (feed.children.length > 5) {
+                feed.removeChild(feed.lastChild);
+            }
+        }
+
+        // Toast notification system
+        function showToast(message, type = 'info') {
+            const toast = document.createElement('div');
+            toast.className = `toast glass-effect rounded-lg p-4 border border-vegas-gold max-w-sm`;
+            toast.innerHTML = `
+                <div class="flex items-center space-x-3">
+                    <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : 'info-circle'} text-vegas-gold"></i>
+                    <p class="text-white text-sm">${message}</p>
+                </div>
+            `;
+            
+            document.body.appendChild(toast);
+            setTimeout(() => toast.remove(), 3000);
+        }
+
+        // Initialize charts
+        function initializeCharts() {
+            // Revenue Chart
+            const revenueCtx = document.getElementById('revenueChart').getContext('2d');
+            new Chart(revenueCtx, {
+                type: 'line',
+                data: {
+                    labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+                    datasets: [{
+                        label: 'Revenue',
+                        data: [1200, 1900, 3000, 5000, 2000, 3000, 4500],
+                        borderColor: '#FFD700',
+                        backgroundColor: 'rgba(255, 215, 0, 0.1)',
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { labels: { color: '#fff' } }
+                    },
+                    scales: {
+                        y: { ticks: { color: '#fff' } },
+                        x: { ticks: { color: '#fff' } }
+                    }
+                }
+            });
+
+            // Performance Chart
+            const performanceCtx = document.getElementById('performanceChart').getContext('2d');
+            new Chart(performanceCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Completed', 'In Progress', 'Pending'],
+                    datasets: [{
+                        data: [75, 15, 10],
+                        backgroundColor: ['#FFD700', '#00D4FF', '#8B5CF6']
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { labels: { color: '#fff' } }
+                    }
+                }
+            });
+        }
+
+        // Valets Table Functions
+        function sortTable(column) {
+            showToast(`Sorting by ${column}...`, 'info');
+        }
+
+        function viewValetProfile(valetId) {
+            showToast(`Viewing profile for ${valetId}`, 'info');
+        }
+
+        function editValet(valetId) {
+            showToast(`Editing ${valetId}`, 'info');
+        }
+
+        function assignValet(valetId) {
+            showToast(`Assigning ${valetId} to location...`, 'info');
+        }
+
+        function exportValetsData() {
+            showToast('Exporting valets data...', 'info');
+        }
+
+        function resetFilters() {
+            document.getElementById('valet-search').value = '';
+            document.getElementById('status-filter').value = '';
+            document.getElementById('rating-filter').value = '';
+            showToast('Filters reset', 'success');
+        }
+
+        // Client Management Functions
+        function viewClientProfile(clientId) {
+            showToast(`Viewing client profile for ${clientId}`, 'info');
+        }
+
+        function editClient(clientId) {
+            showToast(`Editing client ${clientId}`, 'info');
+        }
+
+        function generateInvoice(clientId) {
+            showToast(`Generating invoice for ${clientId}...`, 'info');
+            setTimeout(() => {
+                showToast('Invoice generated and sent!', 'success');
+            }, 2000);
+        }
+
+        function viewBillingHistory(clientId) {
+            showToast(`Viewing billing history for ${clientId}`, 'info');
+        }
+
+        function sendClientNotification(clientId) {
+            showToast(`Sending notification to ${clientId}`, 'info');
+        }
+
+        function exportClientsData() {
+            showToast('Exporting clients data...', 'info');
+        }
+
+        function resetClientFilters() {
+            document.getElementById('client-search').value = '';
+            document.getElementById('client-status-filter').value = '';
+            document.getElementById('client-type-filter').value = '';
+            showToast('Client filters reset', 'success');
+        }
+
+        // Initialize dashboard
+        document.addEventListener('DOMContentLoaded', function() {
+            const elements = document.querySelectorAll('.fade-in');
+            elements.forEach((element, index) => {
+                element.style.animationDelay = `${index * 0.1}s`;
+            });
+
+            initializeCharts();
+            setInterval(simulateRealTimeData, 5000);
+
+            setTimeout(() => {
+                showToast('AI Assistant activated! Click the robot icon to chat.', 'success');
+            }, 1000);
+        });
+    </script>
+</body>
+</html>
