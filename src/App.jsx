@@ -1,6 +1,65 @@
 import React from 'react'
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
+import { AuthProvider } from './hooks/useAuth'
+import OdvCentral from './components/layout/OdvCentral'
 import EnhancedValet from './components/EnhancedValet'
 import { preloadCriticalBricks } from './components/EnhancedValet'
+
+// Demo components for different lots
+const DashboardLot = () => (
+  <div className="p-6">
+    <h1 className="text-2xl font-bold text-vegas-gold mb-6">Operations Dashboard</h1>
+    <EnhancedValet 
+      brickId="dashboard-core"
+      vehicleName="DashboardLayout"
+      showStatus={true}
+    />
+  </div>
+)
+
+const AssignmentsLot = () => (
+  <div className="p-6">
+    <h1 className="text-2xl font-bold text-vegas-gold mb-6">Assignment Management</h1>
+    <EnhancedValet 
+      brickId="assignment-system"
+      vehicleName="AssignmentTable"
+      showStatus={true}
+    />
+  </div>
+)
+
+const ValetsLot = () => (
+  <div className="p-6">
+    <h1 className="text-2xl font-bold text-vegas-gold mb-6">Valet Team Management</h1>
+    <EnhancedValet 
+      brickId="team-management"
+      vehicleName="TeamTable"
+      showStatus={true}
+    />
+  </div>
+)
+
+const ClientsLot = () => (
+  <div className="p-6">
+    <h1 className="text-2xl font-bold text-vegas-gold mb-6">Client Management</h1>
+    <EnhancedValet 
+      brickId="client-management"
+      vehicleName="ClientTable"
+      showStatus={true}
+    />
+  </div>
+)
+
+const AnalyticsLot = () => (
+  <div className="p-6">
+    <h1 className="text-2xl font-bold text-vegas-gold mb-6">Analytics & Insights</h1>
+    <EnhancedValet 
+      brickId="ai-insights"
+      vehicleName="AIChat"
+      showStatus={true}
+    />
+  </div>
+)
 
 function App() {
   React.useEffect(() => {
@@ -9,77 +68,22 @@ function App() {
   }, [])
 
   return (
-    <div className="min-h-screen bg-gray-900 text-white">
-      <header className="bg-gray-800 p-4">
-        <h1 className="text-2xl font-bold text-vegas-gold">
-          Valet Platform - Micro-Frontend Demo
-        </h1>
-      </header>
-      
-      <main className="p-6">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {/* Dashboard Core */}
-          <div className="bg-gray-800 rounded-lg p-4">
-            <h2 className="text-lg font-semibold mb-4">Dashboard Core</h2>
-            <EnhancedValet 
-              brickId="dashboard-core"
-              vehicleName="DashboardLayout"
-              showStatus={true}
-            />
-          </div>
-
-          {/* Team Management */}
-          <div className="bg-gray-800 rounded-lg p-4">
-            <h2 className="text-lg font-semibold mb-4">Team Management</h2>
-            <EnhancedValet 
-              brickId="team-management"
-              vehicleName="TeamTable"
-              showStatus={true}
-            />
-          </div>
-
-          {/* Assignment System */}
-          <div className="bg-gray-800 rounded-lg p-4">
-            <h2 className="text-lg font-semibold mb-4">Assignment System</h2>
-            <EnhancedValet 
-              brickId="assignment-system"
-              vehicleName="AssignmentTable"
-              showStatus={true}
-            />
-          </div>
-
-          {/* AI Insights */}
-          <div className="bg-gray-800 rounded-lg p-4">
-            <h2 className="text-lg font-semibold mb-4">AI Insights</h2>
-            <EnhancedValet 
-              brickId="ai-insights"
-              vehicleName="AIChat"
-              showStatus={true}
-            />
-          </div>
-
-          {/* Client Management */}
-          <div className="bg-gray-800 rounded-lg p-4">
-            <h2 className="text-lg font-semibold mb-4">Client Management</h2>
-            <EnhancedValet 
-              brickId="client-management"
-              vehicleName="ClientTable"
-              showStatus={true}
-            />
-          </div>
-
-          {/* Ticket System */}
-          <div className="bg-gray-800 rounded-lg p-4">
-            <h2 className="text-lg font-semibold mb-4">Ticket System</h2>
-            <EnhancedValet 
-              brickId="ticket-system"
-              vehicleName="TicketTable"
-              showStatus={true}
-            />
-          </div>
+    <AuthProvider>
+      <Router>
+        <div className="min-h-screen bg-black text-white">
+          <Routes>
+            {/* Root route */}
+            <Route path="/" element={<OdvCentral />} />
+            
+            {/* Garage routes */}
+            <Route path="/:garageId" element={<OdvCentral />} />
+            
+            {/* Lot routes */}
+            <Route path="/:garageId/:lotId" element={<OdvCentral />} />
+          </Routes>
         </div>
-      </main>
-    </div>
+      </Router>
+    </AuthProvider>
   )
 }
 
