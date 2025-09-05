@@ -1,7 +1,9 @@
 import React from 'react'
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
 import { AuthProvider } from './hooks/useAuth'
+import { FirestoreProvider } from './contexts/FirestoreContext'
 import OdvCentral from './components/layout/OdvCentral'
+import AIDevPromptBarDemo from './components/ai/AIDevPromptBarDemo'
 import EnhancedValet from './components/EnhancedValet'
 import { preloadCriticalBricks } from './components/EnhancedValet'
 
@@ -69,20 +71,25 @@ function App() {
 
   return (
     <AuthProvider>
-      <Router>
-        <div className="min-h-screen bg-black text-white">
-          <Routes>
-            {/* Root route */}
-            <Route path="/" element={<OdvCentral />} />
-            
-            {/* Garage routes */}
-            <Route path="/:garageId" element={<OdvCentral />} />
-            
-            {/* Lot routes */}
-            <Route path="/:garageId/:lotId" element={<OdvCentral />} />
-          </Routes>
-        </div>
-      </Router>
+      <FirestoreProvider>
+        <Router>
+          <div className="min-h-screen bg-black text-white">
+            <Routes>
+              {/* Root route */}
+              <Route path="/" element={<OdvCentral />} />
+              
+              {/* AI Dev Prompt Bar Demo */}
+              <Route path="/ai-dev-prompt-bar" element={<AIDevPromptBarDemo />} />
+              
+              {/* Garage routes */}
+              <Route path="/:garageId" element={<OdvCentral />} />
+              
+              {/* Lot routes */}
+              <Route path="/:garageId/:lotId" element={<OdvCentral />} />
+            </Routes>
+          </div>
+        </Router>
+      </FirestoreProvider>
     </AuthProvider>
   )
 }
